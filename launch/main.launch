@@ -1,22 +1,21 @@
 <?xml version="1.0"?>
 <launch>
+  
   <group ns="ares">
-  <param name="robot_description" textfile="$(find ares_control)/urdf/ares.urdf" />
-  <node pkg="tmotor" type="tmotor_node" name="fr_wheel_actuator" output="screen">
-    <param name="id" value="1"/>
-    <param name="can_interface" value="vcan0" />
-  </node>
-  <node pkg="tmotor" type="tmotor_node" name="fl_wheel_actuator" output="screen">
-    <param name="id" value="2"/>
-    <param name="can_interface" value="vcan0" />
-  </node>
-  <node pkg="tmotor" type="tmotor_node" name="br_wheel_actuator" output="screen">
-    <param name="id" value="3"/>
-    <param name="can_interface" value="vcan0" />
-  </node>
-  <node pkg="tmotor" type="tmotor_node" name="bl_wheel_actuator" output="screen">
-    <param name="id" value="4"/>
-    <param name="can_interface" value="vcan0" />
-  </node>
+    <rosparam command="load" file="$(find ares_control)/config/ares.yaml" />
+    <node pkg="ares_control" type="wheel_controller_node" name="front_left" output="screen" >
+      <param name="id" value="1" /> 
+    </node>
+    <node pkg="ares_control" type="wheel_controller_node" name="front_right" output="screen" >
+      <param name="id" value="2" /> 
+    </node>
+    <node pkg="ares_control" type="wheel_controller_node" name="rear_left" output="screen" >
+      <param name="id" value="3" /> 
+    </node>
+    <node pkg="ares_control" type="wheel_controller_node" name="rear_right" output="screen" >
+      <param name="id" value="4" />
+    </node>
+    <node pkg="ares_control" type="loco_controller_node" name="loco_controller" output="screen"  />
   </group>
+
 </launch>

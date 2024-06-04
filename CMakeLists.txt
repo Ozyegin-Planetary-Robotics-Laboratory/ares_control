@@ -9,6 +9,7 @@ project(ares_control)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
+  tmotor
   roscpp
   rospy
   sensor_msgs
@@ -138,6 +139,7 @@ include_directories(
 # add_executable(${PROJECT_NAME}_node src/ares_control_node.cpp)
 
 add_executable(loco_controller_node src/loco_controller.cpp)
+add_executable(wheel_controller_node src/wheel_controller.cpp)
 
 # add_executable(led_node src/led_node.cpp)
 
@@ -161,6 +163,11 @@ add_executable(loco_controller_node src/loco_controller.cpp)
 # )
 
 target_link_libraries(loco_controller_node
+  ${catkin_LIBRARIES}
+  tmotor
+)
+
+target_link_libraries(wheel_controller_node
   ${catkin_LIBRARIES}
   tmotor
 )
