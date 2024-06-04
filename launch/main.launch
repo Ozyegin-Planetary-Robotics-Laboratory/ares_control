@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<launch>
+  <group ns="ares">
+  <param name="robot_description" textfile="$(find ares_control)/urdf/ares.urdf" />
+  <node pkg="tmotor" type="tmotor_node" name="fr_wheel_actuator" output="screen">
+    <param name="id" value="1"/>
+    <param name="can_interface" value="vcan0" />
+  </node>
+  <node pkg="tmotor" type="tmotor_node" name="fl_wheel_actuator" output="screen">
+    <param name="id" value="2"/>
+    <param name="can_interface" value="vcan0" />
+  </node>
+  <node pkg="tmotor" type="tmotor_node" name="br_wheel_actuator" output="screen">
+    <param name="id" value="3"/>
+    <param name="can_interface" value="vcan0" />
+  </node>
+  <node pkg="tmotor" type="tmotor_node" name="bl_wheel_actuator" output="screen">
+    <param name="id" value="4"/>
+    <param name="can_interface" value="vcan0" />
+  </node>
+  </group>
+</launch>
