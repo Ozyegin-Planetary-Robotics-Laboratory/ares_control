@@ -39,33 +39,29 @@ public:
     m_pub_fr = m_nh.advertise<tmotor::MotorCommand>("front_left/motor_command", 1);
     m_pub_rl = m_nh.advertise<tmotor::MotorCommand>("rear_right/motor_command", 1);
     m_pub_rr = m_nh.advertise<tmotor::MotorCommand>("rear_left/motor_command", 1);
-    std::thread control_thread([this]{
+    m_control_thread = std::thread([this]{
       ros::Rate freq(20); // 20hz
       while (ros::ok()) {
-      float linear, angular;
-      {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        linear = m_active_twist.linear.x;
-        angular = m_active_twist.angular.z;
+        float linear = getLinear();
+        float angular = getAngular();
         m_active_twist.linear.x *= 0.95f;
+        float v_l = (std::abs(linear) - angular * ROBOT_WIDTH)/WHEEL_RADIUS;
+        float v_r = (std::abs(linear) + angular * ROBOT_WIDTH)/WHEEL_RADIUS;
+        const bool forward = linear > 0.0f;
+        v_l = forward ? v_l : -v_l;
+        v_r = forward ? v_r : -v_r;
+        m_active_cmd[0].velocity = v_r;
+        m_active_cmd[1].velocity = v_l;
+        m_active_cmd[2].velocity = v_r;
+        m_active_cmd[3].velocity = v_l;
+        m_pub_fr.publish(m_active_cmd[0]);
+        m_pub_fl.publish(m_active_cmd[1]);
+        m_pub_rr.publish(m_active_cmd[2]);
+        m_pub_rl.publish(m_active_cmd[3]);
+        freq.sleep();
       }
-      if (linear == 0.0f) continue;
-      float v_l = (std::abs(linear) - angular * ROBOT_WIDTH)/WHEEL_RADIUS;
-      float v_r = (std::abs(linear) + angular * ROBOT_WIDTH)/WHEEL_RADIUS;
-      const bool forward = linear > 0.0f;
-      v_l = forward ? v_l : -v_l;
-      v_r = forward ? v_r : -v_r;
-      m_active_cmd[0].velocity = v_r;
-      m_active_cmd[1].velocity = v_l;
-      m_active_cmd[3].velocity = v_r;
-      m_active_cmd[4].velocity = v_l;
-      m_pub_fr.publish(m_active_cmd[0]);
-      m_pub_fl.publish(m_active_cmd[1]);
-      m_pub_rr.publish(m_active_cmd[2]);
-      m_pub_rl.publish(m_active_cmd[3]);
-      freq.sleep();
-    }});
-    control_thread.detach();
+    });
+    m_control_thread.detach();
   }
 
   void run() {
@@ -74,6 +70,7 @@ public:
 
 private:
   std::map<std::string, TMotor::AKManager> m_motors;
+  std::thread m_control_thread;
   ros::NodeHandle m_nh;
   ros::Subscriber m_sub_cmd;
   ros::Publisher m_pub_fr;
@@ -85,8 +82,19 @@ private:
   tmotor::MotorCommand m_active_cmd[4];
 
   void cmdVelCallback(const geometry_msgs::TwistConstPtr& msg) {
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_active_twist.linear.x = msg->linear.x;
     m_active_twist.angular.z = msg->angular.z;
+  }
+
+  float getLinear() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_active_twist.linear.x;
+  }
+
+  float getAngular() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    return m_active_twist.angular.z;
   }
 };
 
