@@ -34,6 +34,7 @@ public:
     m_active_twist.angular.z = 0.0f;
     m_active_twist.angular.y = 0.0f;
     m_active_twist.angular.z = 0.0f;
+    m_sub_cmd = m_nh.subscribe("cmd_vel", 1, &LocoControllerNode::cmdVelCallback, this);
     m_pub_fl = m_nh.advertise<tmotor::MotorCommand>("front_right/motor_command", 1);
     m_pub_fr = m_nh.advertise<tmotor::MotorCommand>("front_left/motor_command", 1);
     m_pub_rl = m_nh.advertise<tmotor::MotorCommand>("rear_right/motor_command", 1);
@@ -74,6 +75,7 @@ public:
 private:
   std::map<std::string, TMotor::AKManager> m_motors;
   ros::NodeHandle m_nh;
+  ros::Subscriber m_sub_cmd;
   ros::Publisher m_pub_fr;
   ros::Publisher m_pub_fl;
   ros::Publisher m_pub_rr;
@@ -81,10 +83,6 @@ private:
   std::mutex m_mutex;
   geometry_msgs::Twist m_active_twist;
   tmotor::MotorCommand m_active_cmd[4];
-
-  void controlLoop() {
-    
-  }
 
   void cmdVelCallback(const geometry_msgs::TwistConstPtr& msg) {
     m_active_twist.linear.x = msg->linear.x;

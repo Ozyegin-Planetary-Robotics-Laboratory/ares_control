@@ -140,6 +140,7 @@ include_directories(
 
 add_executable(loco_controller_node src/loco_controller.cpp)
 add_executable(wheel_controller_node src/wheel_controller.cpp)
+add_executable(joystick_interface_node src/joystick_interface.cpp)
 
 # add_executable(led_node src/led_node.cpp)
 
@@ -170,6 +171,10 @@ target_link_libraries(loco_controller_node
 target_link_libraries(wheel_controller_node
   ${catkin_LIBRARIES}
   tmotor
+)
+
+target_link_libraries(joystick_interface_node
+  ${catkin_LIBRARIES}
 )
 
 #############

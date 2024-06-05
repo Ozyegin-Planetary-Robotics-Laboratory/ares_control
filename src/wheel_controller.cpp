@@ -44,7 +44,7 @@ public:
 
   void run() {
     motor_updater = std::thread([this] {
-      ros::Rate loop_rate(20);
+      ros::Rate loop_rate(40); // 40hz
       while (!request_shutdown && ros::ok()) {
         tmotor::MotorFeedback msg;
         setMotorStates(motor_manager.getPosition(), motor_manager.getVelocity(), motor_manager.getCurrent());
