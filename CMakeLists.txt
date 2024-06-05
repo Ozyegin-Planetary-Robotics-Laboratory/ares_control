@@ -13,7 +13,12 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   sensor_msgs
   std_msgs
+  pcl_ros
+  pcl_conversions
+  tf2_ros
+  std_srvs
 )
+find_package(PCL REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -137,7 +142,9 @@ include_directories(
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/ares_control_node.cpp)
 
-add_executable(loco_controller_node src/loco_controller.cpp)
+add_executable(loco_controller_node src/loco_controller.cpp )
+add_executable(cloud_processor src/cloud_processer.cpp )
+add_executable(random_map_generator src/map_processor.cpp)
 
 # add_executable(led_node src/led_node.cpp)
 
@@ -165,6 +172,13 @@ target_link_libraries(loco_controller_node
   tmotor
 )
 
+target_link_libraries(cloud_processor
+  ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
+)
+target_link_libraries(random_map_generator
+  ${catkin_LIBRARIES}
+)
 #############
 ## Install ##
 #############
