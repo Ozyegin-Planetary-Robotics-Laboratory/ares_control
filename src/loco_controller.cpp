@@ -44,8 +44,8 @@ public:
       while (ros::ok()) {
         float linear = getLinear();
         float angular = getAngular();
-        m_active_twist.linear.x *= 0.95f;
-        if (linear < 0.0) angular *= -1.0f;
+        decayTwist();
+        if (linear < 0.0) {angular *= -1.0f;}
         float v_l = (linear - angular * ROBOT_WIDTH)/WHEEL_RADIUS;
         float v_r = (linear + angular * ROBOT_WIDTH)/WHEEL_RADIUS;
         m_active_cmd[0].velocity = v_r;
@@ -93,6 +93,12 @@ private:
   float getAngular() {
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_active_twist.angular.z;
+  }
+
+  void decayTwist() {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_active_twist.linear.x *= 0.95f;
+    m_active_twist.angular.z *= 0.95f;
   }
 };
 
