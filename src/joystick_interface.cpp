@@ -8,7 +8,6 @@ double linear_scale, angular_scale;
 geometry_msgs::Twist twist;
 
 void joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
-  geometry_msgs::Twist twist;
   twist.linear.x = joy->axes[1]*linear_scale;
   twist.angular.z = joy->axes[0]*angular_scale;
 }
