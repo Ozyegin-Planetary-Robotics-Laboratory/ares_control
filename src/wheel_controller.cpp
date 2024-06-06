@@ -35,9 +35,7 @@ public:
       ROS_ERROR("CAN interface not provided, exiting...");
       ros::shutdown();
     }
-    if (!ros::param::get("invert", m_invert)) {
-      m_invert = false;
-    }
+    ros::param::get("invert", m_invert);
     ROS_INFO("Connecting to CAN interface %s", can_interface.c_str());
     motor_manager.connect(can_interface.c_str());
     n_nh = ros::NodeHandle("~");
