@@ -45,7 +45,7 @@ public:
         float linear = getLinear();
         float angular = getAngular();
         decayTwist();
-        if (linear < 0.0) {angular *= -1.0f;}
+        if (linear > 0.0) {angular *= -1.0f;}
         float v_l = (linear - angular * ROBOT_WIDTH)/WHEEL_RADIUS;
         float v_r = (linear + angular * ROBOT_WIDTH)/WHEEL_RADIUS;
         m_active_cmd[0].velocity = v_r;
