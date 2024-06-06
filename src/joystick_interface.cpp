@@ -8,6 +8,11 @@ double linear_scale, angular_scale;
 geometry_msgs::Twist twist;
 std::mutex twist_mutex;
 
+void publish() {
+  std::lock_guard<std::mutex> lock(twist_mutex);
+  pub.publish(twist);
+}
+
 void joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   geometry_msgs::Twist twist;
   std::lock_guard<std::mutex> lock(twist_mutex);
@@ -29,9 +34,8 @@ int main(int argc, char** argv) {
   spinner.start();
   ros::Rate loop_rate(10);
   while (ros::ok()) {
+    publish();
     loop_rate.sleep();
-    std::lock_guard<std::mutex> lock(twist_mutex);
-    pub.publish(twist);
   }
   spinner.stop();
 }
