@@ -14,13 +14,13 @@ void joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
 }
 
 int main(int argc, char** argv) {
+  ros::init(argc, argv, "joystick_interface");
   ros::NodeHandle nh;
   ros::Subscriber sub;
   
   twist.angular.x = twist.angular.y = twist.linear.y = twist.linear.z = 0;
   twist.linear.x = twist.linear.y = twist.linear.z = 0;
 
-  ros::init(argc, argv, "joystick_interface");
   nh.getParam("joystick_control/linear_coeff", linear_scale);
   nh.getParam("joystick_control/angular_coeff", angular_scale); 
   pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);
