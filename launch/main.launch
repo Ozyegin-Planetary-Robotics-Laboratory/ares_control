@@ -8,12 +8,15 @@
     </node>
     <node pkg="ares_control" type="wheel_controller_node" name="front_right" output="screen" >
       <param name="id" value="3" /> 
+      <param name="invert" value="false" />
     </node>
     <node pkg="ares_control" type="wheel_controller_node" name="rear_left" output="screen" >
       <param name="id" value="1" /> 
+      <param name="invert" value="false" />
     </node>
     <node pkg="ares_control" type="wheel_controller_node" name="rear_right" output="screen" >
       <param name="id" value="2" />
+      <param name="invert" value="true" />
     </node>
     <node pkg="ares_control" type="loco_controller_node" name="loco_controller" output="screen"  />
     <node pkg="ares_control" type="joystick_interface_node" name="joystick_interface" output="screen"  />

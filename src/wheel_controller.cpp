@@ -35,6 +35,9 @@ public:
       ROS_ERROR("CAN interface not provided, exiting...");
       ros::shutdown();
     }
+    if (!ros::param::get("invert", m_invert)) {
+      m_invert = false;
+    }
     ROS_INFO("Connecting to CAN interface %s", can_interface.c_str());
     motor_manager.connect(can_interface.c_str());
     n_nh = ros::NodeHandle("~");
@@ -45,6 +48,7 @@ public:
   void run() {
     motor_updater = std::thread([this] {
       ros::Rate loop_rate(40); // 40hz
+      
       while (!request_shutdown && ros::ok()) {
         tmotor::MotorFeedback msg;
         setMotorStates(motor_manager.getPosition(), motor_manager.getVelocity(), motor_manager.getCurrent());
@@ -58,7 +62,8 @@ public:
           ROS_WARN("%s", warning_msg.c_str());
         }
         n_pub.publish(msg);
-        motor_manager.sendVelocity(getVelocityCommand());
+        float cmd = getVelocityCommand() * (m_invert ? -1.0 : 1.0);
+        motor_manager.sendVelocity(cmd);
         loop_rate.sleep();
       }
     });
@@ -77,6 +82,7 @@ private:
   ros::Subscriber n_sub;
   ros::Publisher n_pub;
   TMotor::MotorModeID mode_id;
+  bool m_invert;
 
   float getVelocityCommand() {
     std::lock_guard<std::mutex> lock(motor_mutex);
