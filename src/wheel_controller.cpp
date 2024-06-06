@@ -119,9 +119,11 @@ private:
     static const double vel_min = -22.5;
 
     std::lock_guard<std::mutex> lock(motor_mutex);
-    mode_id = static_cast<TMotor::MotorModeID>(msg->type);
-    vel_cmd = msg->velocity < vel_max ? msg->velocity : vel_max;
-    vel_cmd = msg->velocity > vel_min ? msg->velocity : vel_min;
+    vel_cmd = clampFloat(msg->velocity, vel_min, vel_max);
+  }
+
+  float clampFloat(float val, float min, float max) {
+    return val < min ? min : val > max ? max : val;
   }
 
   std::string fault_to_str(TMotor::MotorFault fault) {
