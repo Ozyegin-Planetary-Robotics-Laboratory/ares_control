@@ -13,8 +13,8 @@ void clamp(double& val, double min, double max) {
 
 void joyCallback(const sensor_msgs::Joy::ConstPtr& joy) {
   geometry_msgs::Twist twist;
-  twist.linear.x = joy->axes[1]*linear_scale;
-  twist.angular.z = joy->axes[0]*angular_scale;
+  twist.linear.x = joy->axes[0]*linear_scale;
+  twist.angular.z = joy->axes[1]*angular_scale;
   pub.publish(twist);
 }
 
