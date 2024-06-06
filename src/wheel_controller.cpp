@@ -28,7 +28,8 @@ public:
     motor_manager(id),
     vel_cmd(5.0),
     pose_cur(0.0), vel_cur(0.0), eff_cur(0.0),
-    mode_id(TMotor::MotorModeID::VELOCITY)
+    mode_id(TMotor::MotorModeID::VELOCITY),
+    m_invert(false)
   {
     std::string can_interface;
     if (!ros::param::get("can_interface", can_interface)) {
