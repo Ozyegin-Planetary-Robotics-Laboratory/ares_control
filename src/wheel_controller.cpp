@@ -115,8 +115,8 @@ private:
   }
 
   void motorCommandCallback(const tmotor::MotorCommand::ConstPtr& msg) {
-    static const double vel_max = 90.0;
-    static const double vel_min = -90.0;
+    static const double vel_max = 720.0;
+    static const double vel_min = -720.0;
 
     std::lock_guard<std::mutex> lock(motor_mutex);
     vel_cmd = clampFloat(msg->velocity, vel_min, vel_max);

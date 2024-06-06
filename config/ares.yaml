@@ -1,5 +1,9 @@
 can_interface: "can0"
 
+locomotion_params:
+  max_motor_speed: 180
+  min_motor_speed: -180
+
 joystick_control:
   linear_coeff: 5.0
   angular_coeff: 2.0
