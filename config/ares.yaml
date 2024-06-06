@@ -1,1 +1,1 @@
-can_interface: "vcan0"
+can_interface: "can0"
