@@ -45,11 +45,9 @@ public:
         float linear = getLinear();
         float angular = getAngular();
         m_active_twist.linear.x *= 0.95f;
-        float v_l = (std::abs(linear) - angular * ROBOT_WIDTH)/WHEEL_RADIUS;
-        float v_r = (std::abs(linear) + angular * ROBOT_WIDTH)/WHEEL_RADIUS;
-        const bool forward = linear > 0.0f;
-        v_l = forward ? v_l : -v_l;
-        v_r = forward ? v_r : -v_r;
+        if (linear < 0.0) angular *= -1.0f;
+        float v_l = (linear - angular * ROBOT_WIDTH)/WHEEL_RADIUS;
+        float v_r = (linear + angular * ROBOT_WIDTH)/WHEEL_RADIUS;
         m_active_cmd[0].velocity = v_r;
         m_active_cmd[1].velocity = v_l;
         m_active_cmd[2].velocity = v_r;
