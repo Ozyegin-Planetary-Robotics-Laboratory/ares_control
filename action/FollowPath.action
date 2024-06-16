@@ -1,0 +1,5 @@
+nav_msgs/Path target_path
+---
+bool is_traversed
+---
+float32 percent_traversed

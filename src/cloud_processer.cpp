@@ -9,3 +9,10 @@
  * 
  */
 
+class CloudProcesserNode {
+   
+};
+
+int main(int argc, char *argv[]) {
+
+}

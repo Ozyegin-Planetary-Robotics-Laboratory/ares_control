@@ -8,3 +8,17 @@
  * @copyright Copyright (c) 2024
  * 
  */
+
+#include <ros/ros.h>
+
+class StateMachineNode {
+public:
+
+private:
+  ros::NodeHandle m_nh;
+  
+};
+
+int main(int argc, char *argv[]) {
+
+}

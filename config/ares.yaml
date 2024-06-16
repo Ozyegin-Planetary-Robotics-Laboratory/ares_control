@@ -1,5 +1,5 @@
-can_interface: "can0"
+control_method: "velocity"      # Velociy or torque control
+can_interface:  "can0"          # Name of the CAN network interface
+wheel_ids:      [1, 2, 3, 4]    # fr, fl, rr, rl
+loop_rate:      20              # Control loop frequency
 
-joystick_control:
-  linear_coeff: 5.0
-  angular_coeff: 2.0
