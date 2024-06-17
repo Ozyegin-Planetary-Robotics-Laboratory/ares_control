@@ -122,9 +122,7 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ares_control.cpp
-# )
+add_library(ares_control src/main.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -135,11 +133,6 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/ares_control_node.cpp)
-
-add_executable(path_controller_node src/path_controller.cpp)
-add_executable(loco_controller_node src/loco_controller.cpp)
-add_executable(wheel_controller_node src/wheel_controller.cpp)
-add_executable(joystick_interface_node src/joystick_interface.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -156,24 +149,9 @@ add_executable(joystick_interface_node src/joystick_interface.cpp)
 #   ${catkin_LIBRARIES}
 # )
 
-add_dependencies(path_controller_node ${PROJECT_NAME}_gencfg)
-
-target_link_libraries(loco_controller_node
-${catkin_LIBRARIES}
-tmotor
-)
-
-target_link_libraries(wheel_controller_node
-${catkin_LIBRARIES}
-tmotor
-)
-
-target_link_libraries(joystick_interface_node
-${catkin_LIBRARIES}
-)
-
-target_link_libraries(path_controller_node
-${catkin_LIBRARIES}
+target_link_libraries(ares_control
+  ${catkin_LIBRARIES}
+  tmotor
 )
 
 #############

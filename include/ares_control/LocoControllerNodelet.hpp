@@ -1,7 +1,7 @@
 /**
  * @file loco_interface.cpp
  * @author Toprak Efe Akkılıç (efe.akkilic@ozu.edu.tr)
- * @brief 
+ * @brief Nodelet for a rudimentary differential controller. 
  * @version 0.1
  * @date 2024-05-20
  * 
@@ -13,7 +13,6 @@
 #include <tmotor.hpp>
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
-#include <pluginlib/class_list_macros.h>
 #include <ares_control/WheelCommandArray.h>
 #include <tmotor/MotorFeedback.h>
 #include <geometry_msgs/Twist.h>
@@ -23,53 +22,58 @@
 
 namespace ares_control
 {
-  class LocoControllerNode : public nodelet::Nodelet
+  class LocoControllerNodelet : public nodelet::Nodelet
   {
     public:
-    LocoControllerNode() :
+    LocoControllerNodelet() :
       m_wheel_commands{0.0, 0.0, 0.0, 0.0}
     {}
 
     virtual void onInit()
     {
+            
       ros::NodeHandle &nh = getMTNodeHandle();
 
       std::string control_method;
       std::string can_interface;
       std::vector<int> wheel_ids;
-      double loop_rate;
 
       ros::param::get("control_method", control_method);
       ros::param::get("can_interface", can_interface);
       ros::param::get("wheel_ids", wheel_ids);
-      ros::param::get("loop_rate", loop_rate);
+      ros::param::get("loop_rate", m_control_freq);
 
+      NODELET_INFO("Locomotion: Control method: %s", control_method.c_str());
+      NODELET_INFO("Locomotion: CAN interface: %s", can_interface.c_str());
+      NODELET_INFO("Locomotion: Wheel IDs: %d, %d, %d, %d", wheel_ids[0], wheel_ids[1], wheel_ids[2], wheel_ids[3]);
+      NODELET_INFO("Locomotion: Control loop rate: %f", m_control_freq);
+      
       /* Connect to motors and advertise feedback. */
       for (size_t i = 0; i < 4; i++)
       {
         m_motor_array[i].setMotorID(wheel_ids[i]);
         m_motor_array[i].connect(can_interface.c_str());
       }
+      
       m_wheels_pub[0] = nh.advertise <tmotor::MotorFeedback> ("front_right/feedback", 1, false); 
       m_wheels_pub[1] = nh.advertise <tmotor::MotorFeedback> ("front_left/feedback", 1, false); 
       m_wheels_pub[2] = nh.advertise <tmotor::MotorFeedback> ("rear_right/feedback", 1, false); 
       m_wheels_pub[3] = nh.advertise <tmotor::MotorFeedback> ("rear_left/feedback", 1, false); 
-      
+            
       /* Subscribe to command topics and initialize the control loop. */
       if (control_method == "velocity")
       {
-        m_twist_sub = nh.subscribe <geometry_msgs::Twist> ("cmd_vel", 1, &LocoControllerNode::robotTwistVelocityCallback, this); 
-        m_wheels_cmd_sub = nh.subscribe ("cmd_arr", 1, &LocoControllerNode::wheelArrayVelocityCallback, this); 
-        m_control_thread = std::thread(&LocoControllerNode::velocityControlLoop, this);
+        m_twist_sub = nh.subscribe <geometry_msgs::Twist> ("cmd_vel", 1, &LocoControllerNodelet::robotTwistVelocityCallback, this); 
+        m_wheels_cmd_sub = nh.subscribe <ares_control::WheelCommandArray> ("cmd_arr", 1, &LocoControllerNodelet::wheelArrayVelocityCallback, this); 
+        m_control_thread = std::thread(&LocoControllerNodelet::velocityControlLoop, this);
       }
       else // or "torque"
       {
-        m_twist_sub = nh.subscribe <geometry_msgs::Twist> ("cmd_vel", 1, &LocoControllerNode::robotTwistTorqueCallback, this); 
-        m_wheels_cmd_sub = nh.subscribe ("cmd_arr", 1, &LocoControllerNode::wheelArrayTorqueCallback, this); 
-        m_control_thread = std::thread(&LocoControllerNode::torqueControlLoop, this);
+        m_twist_sub = nh.subscribe <geometry_msgs::Twist> ("cmd_vel", 1, &LocoControllerNodelet::robotTwistTorqueCallback, this); 
+        m_wheels_cmd_sub = nh.subscribe <ares_control::WheelCommandArray> ("cmd_arr", 1, &LocoControllerNodelet::wheelArrayTorqueCallback, this); 
+        m_control_thread = std::thread(&LocoControllerNodelet::torqueControlLoop, this);
       }
       m_control_thread.detach();
-
     }
 
     private:    
@@ -182,7 +186,5 @@ namespace ares_control
       m_wheel_commands[3] = msg->data[3].current;
     }
 
-  }; // class LocoControllerNode
+  }; // class LocoControllerNodelet
 }; // namespace ares_control
-
-PLUGINLIB_EXPORT_CLASS(ares_control::LocoControllerNode, nodelet::Nodelet);
