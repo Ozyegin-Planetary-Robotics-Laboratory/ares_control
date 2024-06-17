@@ -8,16 +8,21 @@ project(ares_control)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
   roscpp
   rospy
+  tmotor
+  genmsg
+  dynamic_reconfigure
+  actionlib
+  actionlib_msgs
+  geometry_msgs
   sensor_msgs
   std_msgs
+  nav_msgs
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -49,11 +54,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+  FILES
+  WheelCommandArray.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -63,17 +67,13 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+add_action_files(DIRECTORY action FILES FollowPath.action)
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   geometry_msgs#   sensor_msgs#   std_msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  actionlib_msgs tmotor nav_msgs std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -90,10 +90,9 @@ find_package(catkin REQUIRED COMPONENTS
 ##     and list every .cfg file to be processed
 
 ## Generate dynamic reconfigure parameters in the 'cfg' folder
-# generate_dynamic_reconfigure_options(
-#   cfg/DynReconf1.cfg
-#   cfg/DynReconf2.cfg
-# )
+generate_dynamic_reconfigure_options(
+  cfg/PathController.cfg
+)
 
 ###################################
 ## catkin specific configuration ##
@@ -118,14 +117,12 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/ares_control.cpp
-# )
+add_library(ares_control src/main.cpp)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -136,14 +133,6 @@ include_directories(
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/ares_control_node.cpp)
-
-add_executable(loco_controller_node src/loco_controller.cpp)
-
-# add_executable(led_node src/led_node.cpp)
-
-# target_link_libraries(led_node
-#   ${catkin_LIBRARIES}
-# )
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -160,7 +149,7 @@ add_executable(loco_controller_node src/loco_controller.cpp)
 #   ${catkin_LIBRARIES}
 # )
 
-target_link_libraries(loco_controller_node
+target_link_libraries(ares_control
   ${catkin_LIBRARIES}
   tmotor
 )

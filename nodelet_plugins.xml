@@ -1,0 +1,12 @@
+<library path="lib/libares_control">
+  <class name="ares_control/LocoControllerNodelet" type="ares_control::LocoControllerNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      A nodelet for operating the locomotion hardware of the robot.
+    </description>
+  </class>
+  <class name="ares_control/JoystickInterfaceNodelet" type="ares_control::JoystickInterfaceNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      A nodelet for interfacing with a joystick.
+    </description>
+  </class>
+</library>
