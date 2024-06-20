@@ -9,4 +9,9 @@
       A nodelet for interfacing with a joystick.
     </description>
   </class>
+  <class name="ares_control/PathControllerNodelet" type="ares_control::PathControllerNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      A nodelet for controlling the robot's path in line with action requests.
+    </description>
+  </class>
 </library>

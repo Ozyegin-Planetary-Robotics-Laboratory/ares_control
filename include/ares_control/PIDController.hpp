@@ -62,7 +62,7 @@ struct PIDController {
     limMaxInt(1000.0f)
   {}
 
-  void reset(PIDController *pid) {
+  void reset() {
     integrator = 0.0f;
     prevError  = 0.0f;
     differentiator  = 0.0f;
@@ -71,7 +71,7 @@ struct PIDController {
   }
 
 
-  float update(PIDController *pid, float setpoint, float measurement, float kp, float ki, float kd) {
+  float update(float setpoint, float measurement, float kp, float ki, float kd) {
     /*
     * Error signal
     */
@@ -117,6 +117,6 @@ struct PIDController {
     return out;
   }
 
-};
+}; // struct PIDController
 
 #endif // PID_CONTROLLER_H
