@@ -12,6 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   tmotor
   genmsg
+  tf2_ros
   dynamic_reconfigure
   actionlib
   actionlib_msgs
