@@ -41,7 +41,7 @@ namespace ares_control
   float m_p, m_i, m_d;
   double m_frequency;
   nav_msgs::Path m_path_setpoint;
-  geometry_msgs::PoseStamped m_pose_setpoint;
+  geometry_msgs::PoseStamped m_rover_pose;
   PIDController m_pid_controller;
   ros::Publisher m_pub;
   dynamic_reconfigure::Server<ares_control::PathControllerConfig> m_reconf_server;
@@ -50,11 +50,13 @@ namespace ares_control
   tf2_ros::Buffer m_tf_buffer;
   std::shared_ptr<tf2_ros::TransformListener> m_tf_listener_ptr;
   std::thread m_control_thread;
-  std::mutex m_command_mutex;
+  std::mutex m_path_mutex;
+  std::mutex m_rover_pose_mutex;
+  std::mutex m_pid_params_mutex;
 
   void reconfCallback(ares_control::PathControllerConfig &config, uint32_t level)
   {
-    std::lock_guard<std::mutex> lock(m_command_mutex);
+    std::lock_guard<std::mutex> lock(m_pid_params_mutex);
     m_p = config.controller_param_p;
     m_i = config.controller_param_i;
     m_d = config.controller_param_d;
@@ -62,26 +64,77 @@ namespace ares_control
 
   void actionCallback(const ares_control::FollowPathGoalConstPtr &goal)
   {
-    ares_control::FollowPathResult result;
-    ares_control::FollowPathFeedback feedback;
-    result.is_traversed = true;
-    m_action_server_ptr->setSucceeded(result);
+    std::lock_guard<std::mutex> lock(m_path_mutex);
+    m_path_setpoint = goal->target_path;
+    m_pid_controller.reset();
   }
 
   void controlLoop()
-  {
+  { 
     ros::Rate loop_rate(m_frequency);
     while (!ros::isShuttingDown())
     {
       loop_rate.sleep();
+      
       if (!m_action_server_ptr->isActive())
       {
         continue;
       }
+      
+      /* Get the current state. */
+      nav_msgs::Path path_setpoint;
+      geometry_msgs::PoseStamped rover_pose;
+      {
+        std::lock_guard<std::mutex> lock(m_path_mutex);
+        path_setpoint = m_path_setpoint;
+      }
+      {
+        std::lock_guard<std::mutex> lock(m_rover_pose_mutex);
+        rover_pose = m_rover_pose;
+      }
 
+      /* Check if the path has been fully followed. */
+      geometry_msgs::PoseStamped pose_reference(path_setpoint.poses.back());
+      pose_reference.pose.position.x -= rover_pose.pose.position.x;
+      pose_reference.pose.position.y -= rover_pose.pose.position.y;
+      if (std::pow(pose_reference.pose.position.x, 2) + std::pow(pose_reference.pose.position.y, 2) < 2.0f)
+      {
+        ares_control::FollowPathResult result;
+        result.is_traversed = true;
+        m_action_server_ptr->setSucceeded(result);
+        std::lock_guard<std::mutex> lock(m_path_mutex);
+        m_pid_controller.reset();
+        path_setpoint.poses.clear();
+        continue;
+      }
+
+      /* Get the reference position. */
+      geometry_msgs::PoseStamped closest_pose = path_setpoint.poses.front();
+      double min_distance2 = std::pow(rover_pose.pose.position.x - closest_pose.pose.position.x, 2) + std::pow(rover_pose.pose.position.y - closest_pose.pose.position.y, 2);
+      for (std::vector<geometry_msgs::PoseStamped>::iterator it = path_setpoint.poses.begin(); it != path_setpoint.poses.end(); it++)
+      {
+        double distance2 = std::pow(rover_pose.pose.position.x - it->pose.position.x, 2) + std::pow(rover_pose.pose.position.y - it->pose.position.y, 2);
+        if (distance2 < min_distance2)
+        {
+          min_distance2 = distance2;
+          closest_pose = *it;
+        }
+      }
+      
+      /* Compute the control signal. */
+      tf2::Vector3 line(1.0f, 0.0f, 0.0f);
+      tf2::Vector3 error_vector(rover_pose.pose.position.x - closest_pose.pose.position.x, rover_pose.pose.position.y - closest_pose.pose.position.y, 0.0);
+      tf2::Quaternion q;
+      tf2::fromMsg(closest_pose.pose.orientation, q);
+      line = tf2::quatRotate(q, line);
+      tf2::Vector3 cross = line.cross(error_vector);
+      float error = cross.getZ();
+      float output = m_pid_controller.update(0.0f, error, m_p, m_i, m_d);
+      
+      /* Publish the control signal. */
       geometry_msgs::TwistPtr twist = boost::make_shared<geometry_msgs::Twist>();
-      twist->linear.x = 0.0;
-      twist->angular.z = 0.0;
+      twist->linear.x = 1.0f;
+      twist->angular.z = atan(output);
       m_pub.publish(twist);
     } 
   }
