@@ -23,43 +23,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-struct PIDController {
+struct PIDController
+{
 
 	/* Derivative low-pass filter time constant */
-	float tau;
-
+	float tau = 0.1f;
 	/* Output limits */
-	float limMin;
-	float limMax;
-
+	float limMin = -360.0f;
+	float limMax = 360.0f;
 	/* Integrator limits */
-	float limMinInt;
-	float limMaxInt;
-
+	float limMinInt = -1000.0f;
+	float limMaxInt = 1000.0f;
 	/* Sample time (in seconds) */
 	float T;
-
 	/* Controller "memory" */
-	float integrator;
-	float prevError;			/* Required for integrator */
-	float differentiator;
-	float prevMeasurement;		/* Required for differentiator */
-
+	float integrator = 0.0f;
+	float prevError = 0.0f;			/* Required for integrator */
+	float differentiator = 0.0f;
+	float prevMeasurement = 0.0f;		/* Required for differentiator */
 	/* Controller output */
-	float out;
+	float out = 0.0f;
 
-  PIDController(float T) :
-    integrator(0.0f),
-    prevError(0.0f),
-    differentiator(0.0f),
-    prevMeasurement(0.0f),
-    out(0.0f),
-    T(T),
-    tau(0.1f),
-    limMin(-360.0f),
-    limMax(360.0f),
-    limMinInt(-1000.0f),
-    limMaxInt(1000.0f)
+  PIDController() :
+    T(0.0f)
+  {}
+
+  PIDController(float T_in) :
+    T(T_in)
   {}
 
   void reset() {
