@@ -1,3 +1,6 @@
+#ifndef RAPIDTREE_UTILS_HPP
+#define RAPIDTREE_UTILS_HPP
+
 #include <iostream>
 #include <vector>
 #include <cmath>
@@ -7,9 +10,6 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
-#ifndef RAPIDTREE_UTILS_HPP
-#define RAPIDTREE_UTILS_HPP
 
 struct Point {
   double x, y;

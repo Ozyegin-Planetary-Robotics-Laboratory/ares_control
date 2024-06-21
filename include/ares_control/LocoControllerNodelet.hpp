@@ -1,13 +1,5 @@
-/**
- * @file loco_interface.cpp
- * @author Toprak Efe Akkılıç (efe.akkilic@ozu.edu.tr)
- * @brief Nodelet for a rudimentary differential controller. 
- * @version 0.1
- * @date 2024-05-20
- * 
- * @copyright Copyright (c) 2024
- * 
- */
+#ifndef LOCO_CONTROLLER_NODELET_HPP
+#define LOCO_CONTROLLER_NODELET_HPP
 
 #include <mutex>
 #include <tmotor.hpp>
@@ -188,3 +180,5 @@ namespace ares_control
 
   }; // class LocoControllerNodelet
 }; // namespace ares_control
+
+#endif // LOCO_CONTROLLER_NODELET_HPP

@@ -1,3 +1,6 @@
+#ifndef PATH_CONTROLLER_NODELET_HPP
+#define PATH_CONTROLLER_NODELET_HPP
+
 #include <mutex>
 #include <thread>
 #include <ros/ros.h>
@@ -141,3 +144,5 @@ namespace ares_control
 
   }; // class PathControllerNodelet
 } // namespace ares_control
+
+#endif // PATH_CONTROLLER_NODELET_HPP

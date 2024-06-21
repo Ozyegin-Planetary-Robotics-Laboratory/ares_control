@@ -1,13 +1,5 @@
-/**
- * @file JoystickInterfaceNodelet.hpp
- * @author Toprak Efe Akkılıç (efe.akkilic@ozu.ed.tr)
- * @brief Nodelet for Joystick to Twist interfacing.
- * @version 0.1
- * @date 2024-06-17
- * 
- * @copyright Copyright (c) 2024
- * 
- */
+#ifndef JOYSTICK_INTERFACE_NODELET_HPP
+#define JOYSTICK_INTERFACE_NODELET_HPP
 
 #include <mutex>
 #include <thread>
@@ -72,3 +64,5 @@ namespace ares_control
 
   }; // JoystickInterfaceNodelet
 }; // namespace ares_control
+
+#endif // JOYSTICK_INTERFACE_NODELET_HPP

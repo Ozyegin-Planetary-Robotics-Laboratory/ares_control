@@ -1,10 +1,10 @@
+#ifndef OCCUPANCY_UTILS_HPP
+#define OCCUPANCY_UTILS_HPP
+
 #include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <array>
-
-#ifndef OCCUPANCY_UTILS_HPP
-#define OCCUPANCY_UTILS_HPP
 
 class GridUtils {
 private:
