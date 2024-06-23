@@ -8,10 +8,12 @@ namespace ares_control
 {
   class MissionControllerNodelet : public nodelet::Nodelet 
   {
-  public:
-
-  private:
-  
+    public:
+    virtual void onInit()
+    {
+      NODELET_INFO("Initializing Mission Controller Nodelet");
+    }
+    private:
   }; // class MissionControllerNodelet
 } // namespace ares_control
 

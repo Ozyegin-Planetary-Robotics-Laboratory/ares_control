@@ -1,6 +1,8 @@
 #ifndef PID_CONTROLLER_H
 #define PID_CONTROLLER_H
 
+#include <mutex>
+
 /* MIT License
 
 Copyright (c) 2020 Philip Salmony
@@ -23,26 +25,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE. */
 
-struct PIDController
+class PIDController
 {
-
-	/* Derivative low-pass filter time constant */
-	float tau = 0.1f;
-	/* Output limits */
-	float limMin = -360.0f;
-	float limMax = 360.0f;
-	/* Integrator limits */
-	float limMinInt = -1000.0f;
-	float limMaxInt = 1000.0f;
-	/* Sample time (in seconds) */
-	float T;
-	/* Controller "memory" */
-	float integrator = 0.0f;
-	float prevError = 0.0f;			/* Required for integrator */
-	float differentiator = 0.0f;
-	float prevMeasurement = 0.0f;		/* Required for differentiator */
-	/* Controller output */
-	float out = 0.0f;
+  public:
 
   PIDController() :
     T(0.0f)
@@ -51,8 +36,14 @@ struct PIDController
   PIDController(float T_in) :
     T(T_in)
   {}
+  
+  void setSamplePeriod(float T_in) {
+    std::lock_guard<std::mutex> lock(m_lock);
+    T = T_in;
+  }
 
   void reset() {
+    std::lock_guard<std::mutex> lock(m_lock);
     integrator = 0.0f;
     prevError  = 0.0f;
     differentiator  = 0.0f;
@@ -60,8 +51,8 @@ struct PIDController
     out = 0.0f;
   }
 
-
   float update(float setpoint, float measurement, float kp, float ki, float kd) {
+    std::lock_guard<std::mutex> lock(m_lock);
     /*
     * Error signal
     */
@@ -106,6 +97,26 @@ struct PIDController
     /* Return controller output */
     return out;
   }
+
+  private:
+  std::mutex m_lock;
+	/* Derivative low-pass filter time constant */
+	float tau = 0.1f;
+	/* Output limits */
+	float limMin = -360.0f;
+	float limMax = 360.0f;
+	/* Integrator limits */
+	float limMinInt = -1000.0f;
+	float limMaxInt = 1000.0f;
+	/* Sample time (in seconds) */
+	float T;
+	/* Controller "memory" */
+	float integrator = 0.0f;
+	float prevError = 0.0f;			/* Required for integrator */
+	float differentiator = 0.0f;
+	float prevMeasurement = 0.0f;		/* Required for differentiator */
+	/* Controller output */
+	float out = 0.0f;
 
 }; // struct PIDController
 

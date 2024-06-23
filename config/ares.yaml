@@ -1,8 +1,14 @@
-speed:
-  angular_scale:  1.0           # Scale factor for angular velocity
-  linear_scale:   1.0           # Scale factor for linear velocity
+locomotion:
+  speed:
+    angular_scale:  1.0             # Scale factor for angular velocity
+    linear_scale:   1.0             # Scale factor for linear velocity
+  control_method:   "velocity"      # Velociy or torque control
+  wheel_ids:        [1, 2, 3, 4]    # fr, fl, rr, rl
 
-control_method: "velocity"      # Velociy or torque control
-can_interface:  "vcan0"          # Name of the CAN network interface
-wheel_ids:      [1, 2, 3, 4]    # fr, fl, rr, rl
-loop_rate:      20              # Control loop frequency
+occupancy_map:
+  resolution:       5               # Resolution of the map r, means 2**r cells per meter
+  length:           50              # Length of the map in meters
+
+general:
+  loop_rate:        20              # Control loop frequency
+  can_interface:    "vcan0"         # Name of the CAN network interface

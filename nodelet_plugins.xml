@@ -1,4 +1,14 @@
 <library path="lib/libares_control">
+  <class name="ares_control/PathfindingServiceNodelet" type="ares_control::PathfindingServiceNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      A nodelet for constructing appropriate trajectories for the robot to follow.
+    </description>
+  </class>
+  <class name="ares_control/MissionControllerNodelet" type="ares_control::MissionControllerNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      A nodelet for storing goal positions and managing the robot's controllers by polling environmental states. 
+    </description>
+  </class>
   <class name="ares_control/LocoControllerNodelet" type="ares_control::LocoControllerNodelet" base_class_type="nodelet::Nodelet">
     <description>
       A nodelet for operating the locomotion hardware of the robot.

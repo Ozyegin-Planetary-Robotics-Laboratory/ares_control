@@ -24,15 +24,7 @@ public:
   bool isCollisionCourse(const nav_msgs::Path &path);
 };
 
-GridUtils::GridUtils(/* args */)
-{
-}
-
-GridUtils::~GridUtils()
-{
-}
-
-void GridUtils::openOccupancyGrid(const nav_msgs::OccupancyGrid::ConstPtr &grid_msg) {
+void GridUtils::openOccupancyGrid(const nav_msgs::OccupancyGridConstPtr &grid_msg) {
   obstacle_grid = grid_msg;
 }
 

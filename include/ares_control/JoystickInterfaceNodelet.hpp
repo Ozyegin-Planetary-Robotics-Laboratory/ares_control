@@ -21,10 +21,9 @@ namespace ares_control
     virtual void onInit()
     {
       ros::NodeHandle &nh = getMTNodeHandle();
-      ros::NodeHandle &pnh = getMTPrivateNodeHandle();
-      pnh.getParam("speed/linear_scale", m_linear_scale);
-      pnh.getParam("speed/angular_scale", m_angular_scale);
-      ros::param::get("loop_rate", m_loop_rate);
+      ros::param::get("locomotion/speed/linear_scale", m_linear_scale);
+      ros::param::get("locomotion/speed/angular_scale", m_angular_scale);
+      ros::param::get("general/loop_rate", m_loop_rate);
       m_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &JoystickInterfaceNodelet::joyCallback, this);
       m_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);    
       m_control_thread = std::thread(&JoystickInterfaceNodelet::controlLoop, this); 

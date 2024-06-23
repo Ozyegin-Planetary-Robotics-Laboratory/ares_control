@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   tmotor
   genmsg
   tf2_ros
+  pcl_ros
   dynamic_reconfigure
   actionlib
   actionlib_msgs
@@ -24,6 +25,8 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
+
+find_package(PCL REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -61,11 +64,10 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  GetPath.srv
+)
 
 ## Generate actions in the 'action' folder
 add_action_files(DIRECTORY action FILES FollowPath.action)
@@ -152,6 +154,7 @@ add_library(ares_control src/main.cpp)
 
 target_link_libraries(ares_control
   ${catkin_LIBRARIES}
+  ${PCL_LIBRARIES}
   tmotor
 )
 
