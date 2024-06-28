@@ -14,6 +14,7 @@
 #include <tf2_ros/buffer.h>
 #include <ares_control/RRT.hpp>
 #include <ares_control/GridUtils.hpp>
+#include <ares_control/CheckPath.h>
 #include <ares_control/GetPath.h>
 #include <sensor_msgs/PointCloud2.h>
 #include <nav_msgs/OccupancyGrid.h>
@@ -41,12 +42,14 @@ namespace ares_control
       m_tf_buffer = std::make_shared<tf2_ros::Buffer>();
       m_tf_listener = std::make_shared<tf2_ros::TransformListener>(*m_tf_buffer);
       m_sub = nh.subscribe("point_cloud", 1, &PathfindingServiceNodelet::pointCloudCallback, this);
-      m_server = nh.advertiseService("get_path", &PathfindingServiceNodelet::handlePathRequest, this);
+      m_get_path_server = nh.advertiseService("get_path", &PathfindingServiceNodelet::handlePathRequest, this);
+      m_check_path_server = nh.advertiseService("check_path", &PathfindingServiceNodelet::handleCheckCollisionCourseRequest, this);
     }
 
     private:
     ros::Subscriber m_sub;
-    ros::ServiceServer m_server;
+    ros::ServiceServer m_get_path_server;
+    ros::ServiceServer m_check_path_server;
     std::mutex m_occupancy_grid_mutex;
     std::shared_ptr <tf2_ros::Buffer> m_tf_buffer;
     std::shared_ptr <tf2_ros::TransformListener> m_tf_listener;
@@ -85,6 +88,11 @@ namespace ares_control
       /* Calculate and return a path from the position of the rover to the goal. */
       return true;
     }
+    
+    bool handleCheckCollisionCourseRequest(ares_control::CheckPath::Request &req, ares_control::CheckPath::Response &res)
+    {
+      return true;
+    } 
 
     void updateOccupancyGrid(const pcl::PCLPointCloud2 &cloud, nav_msgs::OccupancyGrid &grid)
     {

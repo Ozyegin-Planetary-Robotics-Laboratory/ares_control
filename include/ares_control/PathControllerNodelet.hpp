@@ -46,7 +46,6 @@ namespace ares_control
       m_control_thread.detach();
 
       m_action_server_ptr = std::make_unique<ActionServer> (nh, "follow_path", false); 
-      m_action_server_ptr->registerPreemptCallback(boost::bind(&PathControllerNodelet::actionPreemptCallback, this));
       m_action_server_ptr->registerGoalCallback(boost::bind(&PathControllerNodelet::actionGoalCallback, this));
       m_action_server_ptr->start();
     }
@@ -74,14 +73,6 @@ namespace ares_control
       m_p = config.controller_param_p;
       m_i = config.controller_param_i;
       m_d = config.controller_param_d;
-    }
-
-    void actionPreemptCallback()
-    {
-      m_pid_controller.reset();
-      std::lock_guard<std::mutex> lock(m_path_mutex);
-      m_path_setpoint.poses.clear();
-      m_action_server_ptr->setPreempted();
     }
 
     void actionGoalCallback()
