@@ -30,8 +30,10 @@ namespace ares_control
       std::string can_interface;
       std::vector<int> wheel_ids;
 
-      ros::param::get("wheel_ids", wheel_ids);
-      ros::param::get("control_method", control_method);
+      NODELET_INFO("Initializing parameters from server.");
+
+      ros::param::get("locomotion/wheel_ids", wheel_ids);
+      ros::param::get("locomotion/control_method", control_method);
       ros::param::get("general/loop_rate", m_control_freq);
       ros::param::get("general/can_interface", can_interface);
 
