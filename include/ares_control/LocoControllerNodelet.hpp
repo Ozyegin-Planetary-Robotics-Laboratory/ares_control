@@ -150,6 +150,7 @@ namespace ares_control
       float v_l = (linear - angular * ROBOT_WIDTH) * WHEEL_RADIUS;
       float v_r = (linear + angular * ROBOT_WIDTH) * WHEEL_RADIUS;
       std::lock_guard <std::mutex> guard(m_control_mutex);
+      NODELET_INFO("Setting Velocity Commands: %f, %f", v_l, v_r);
       m_wheel_commands[0] = m_wheel_commands[2] = v_r;       
       m_wheel_commands[1] = m_wheel_commands[3] = v_l;       
     }
