@@ -58,12 +58,14 @@ namespace ares_control
       /* Subscribe to command topics and initialize the control loop. */
       if (control_method == "velocity")
       {
+        NODELET_INFO("Enacting VELOCITY control.");
         m_twist_sub = nh.subscribe <geometry_msgs::Twist> ("cmd_vel", 1, &LocoControllerNodelet::robotTwistVelocityCallback, this); 
         m_wheels_cmd_sub = nh.subscribe <ares_control::WheelCommandArray> ("cmd_arr", 1, &LocoControllerNodelet::wheelArrayVelocityCallback, this); 
         m_control_thread = std::thread(&LocoControllerNodelet::velocityControlLoop, this);
       }
       else // or "torque"
       {
+        NODELET_INFO("Enacting TORQUE control.");
         m_twist_sub = nh.subscribe <geometry_msgs::Twist> ("cmd_vel", 1, &LocoControllerNodelet::robotTwistTorqueCallback, this); 
         m_wheels_cmd_sub = nh.subscribe <ares_control::WheelCommandArray> ("cmd_arr", 1, &LocoControllerNodelet::wheelArrayTorqueCallback, this); 
         m_control_thread = std::thread(&LocoControllerNodelet::torqueControlLoop, this);
@@ -101,8 +103,9 @@ namespace ares_control
           feedbacks[i]->temperature = m_motor_array[i].getTemperature();
           feedbacks[i]->motor_fault = m_motor_array[i].getFault();
           std::lock_guard <std::mutex> guard(m_control_mutex);
-          cmds[i] = m_wheel_commands[i]*180.0/M_PI;
+          cmds[i] = m_wheel_commands[i];
           m_wheel_commands[i] *= 0.95;
+          NODELET_INFO("Sending velocity %f", cmds[i]);
           m_motor_array[i].sendVelocity(cmds[i]);
         }
         m_wheels_pub[0].publish(feedbacks[0]); 
