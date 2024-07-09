@@ -1,6 +1,7 @@
 #ifndef LOCO_CONTROLLER_NODELET_HPP
 #define LOCO_CONTROLLER_NODELET_HPP
 
+#include <cmath>
 #include <mutex>
 #include <tmotor.hpp>
 #include <ros/ros.h>
@@ -100,7 +101,7 @@ namespace ares_control
           feedbacks[i]->temperature = m_motor_array[i].getTemperature();
           feedbacks[i]->motor_fault = m_motor_array[i].getFault();
           std::lock_guard <std::mutex> guard(m_control_mutex);
-          cmds[i] = m_wheel_commands[i];
+          cmds[i] = m_wheel_commands[i]*180.0/M_PI;
           m_wheel_commands[i] *= 0.95;
           m_motor_array[i].sendVelocity(cmds[i]);
         }
