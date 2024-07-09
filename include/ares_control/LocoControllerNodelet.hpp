@@ -12,6 +12,7 @@
 
 #define WHEEL_RADIUS 0.1425f // cm
 #define ROBOT_WIDTH 0.75f // cm
+#define RAD_TO_DEG 57.2957795131f
 
 namespace ares_control
 {
@@ -105,7 +106,6 @@ namespace ares_control
           std::lock_guard <std::mutex> guard(m_control_mutex);
           cmds[i] = m_wheel_commands[i];
           m_wheel_commands[i] *= 0.95;
-          NODELET_INFO("Sending velocity %f", cmds[i]);
           m_motor_array[i].sendVelocity(cmds[i]);
         }
         m_wheels_pub[0].publish(feedbacks[0]); 
@@ -154,9 +154,8 @@ namespace ares_control
       float v_l = (linear - angular * ROBOT_WIDTH) * WHEEL_RADIUS;
       float v_r = (linear + angular * ROBOT_WIDTH) * WHEEL_RADIUS;
       std::lock_guard <std::mutex> guard(m_control_mutex);
-      NODELET_INFO("Setting Velocity Commands: %f, %f", v_l, v_r);
-      m_wheel_commands[0] = m_wheel_commands[2] = v_r;       
-      m_wheel_commands[1] = m_wheel_commands[3] = v_l;       
+      m_wheel_commands[0] = m_wheel_commands[2] = v_r*RAD_TO_DEG;       
+      m_wheel_commands[1] = m_wheel_commands[3] = v_l*RAD_TO_DEG;       
     }
 
     void wheelArrayVelocityCallback(const ares_control::WheelCommandArrayConstPtr &msg)
