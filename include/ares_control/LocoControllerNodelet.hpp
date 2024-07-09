@@ -101,7 +101,7 @@ namespace ares_control
           feedbacks[i]->motor_fault = m_motor_array[i].getFault();
           std::lock_guard <std::mutex> guard(m_control_mutex);
           cmds[i] = m_wheel_commands[i];
-          m_wheel_commands[i] *= 0.9;
+          m_wheel_commands[i] *= 0.95;
           m_motor_array[i].sendVelocity(cmds[i]);
         }
         m_wheels_pub[0].publish(feedbacks[0]); 
@@ -133,7 +133,7 @@ namespace ares_control
           feedbacks[i]->motor_fault = m_motor_array[i].getFault();
           std::lock_guard <std::mutex> guard(m_control_mutex);
           cmds[i] = m_wheel_commands[i];
-          m_wheel_commands[i] *= 0.9;
+          m_wheel_commands[i] *= 0.95;
           m_motor_array[i].sendCurrent(cmds[i]);
         }
         m_wheels_pub[0].publish(feedbacks[0]); 
