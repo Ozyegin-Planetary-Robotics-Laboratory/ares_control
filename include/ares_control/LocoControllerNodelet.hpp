@@ -150,7 +150,6 @@ namespace ares_control
     void robotTwistVelocityCallback(const geometry_msgs::TwistConstPtr &msg)
     {
       float linear(msg->linear.x), angular(msg->angular.z);
-      if (linear > 0.0f) {angular *= -1.0f;}
       float v_l = (linear - angular * ROBOT_WIDTH) * WHEEL_RADIUS;
       float v_r = (linear + angular * ROBOT_WIDTH) * WHEEL_RADIUS;
       std::lock_guard <std::mutex> guard(m_control_mutex);
