@@ -2,6 +2,7 @@ locomotion:
   speed:
     angular_scale:  20.0            # Scale factor for angular velocity
     linear_scale:   10.0            # Scale factor for linear velocity
+  motor_temp_lim:   50              # The temperature the motors will run up to, in celsius
   control_degree:   30              # How smooth the controller responds
   control_method:   "velocity"      # Velociy or torque control
   wheel_ids:        [3, 4, 2, 1]    # fr, fl, rr, rl

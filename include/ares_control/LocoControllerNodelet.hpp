@@ -20,7 +20,8 @@ namespace ares_control
   {
     public:
     LocoControllerNodelet() :
-      m_wheel_commands{0.0, 0.0, 0.0, 0.0}
+      m_wheel_commands{0.0, 0.0, 0.0, 0.0},
+      m_motor_name_map{"front right", "front left", "rear right", "rear left"}
     {}
 
     virtual void onInit()
@@ -84,6 +85,7 @@ namespace ares_control
     int m_control_degree;
     std::mutex m_control_mutex;
     std::thread m_control_thread;
+    std::vector<std::string> m_motor_name_map;
 
     void velocityControlLoop()
     {
@@ -98,6 +100,7 @@ namespace ares_control
           tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback),
           tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback)
         };
+        bool overheating = isOverheating();
         for (size_t i = 0; i < 4; i++)
         {
           feedbacks[i]->position    = m_motor_array[i].getPosition();
@@ -108,7 +111,7 @@ namespace ares_control
           std::lock_guard <std::mutex> guard(m_control_mutex);
           cmds[i] = m_wheel_commands[i];
           m_wheel_commands[i] *= 0.95;
-          m_motor_array[i].sendVelocity(cmds[i]);
+          if (!overheating) m_motor_array[i].sendVelocity(cmds[i]);
         }
         m_wheels_pub[0].publish(feedbacks[0]); 
         m_wheels_pub[1].publish(feedbacks[1]); 
@@ -154,8 +157,7 @@ namespace ares_control
       float linear(msg->linear.x), angular(msg->angular.z);
       std::lock_guard <std::mutex> guard(m_control_mutex);
       float v_l = ((linear - angular * ROBOT_WIDTH) * WHEEL_RADIUS * RAD_TO_DEG - m_wheel_commands[0]*m_control_degree)/(m_control_degree + 1);
-      float v_r = ((linear + angular * ROBOT_WIDTH) * WHEEL_RADIUS * RAD_TO_DEG + m_wheel_commands[1]*m_control_degree)/(m_control_degree + 1);
-      NODELET_INFO("Left wheel velocity: %f, Right wheel velocity: %f", v_l, v_r);
+      float v_r = ((linear + angular * ROBOT_WIDTH) * WHEEL_RADIUS * RAD_TO_DEG + m_wheel_commands[1]*m_control_degree)/(m_control_degree + 1);      
       m_wheel_commands[0] = m_wheel_commands[2] = -v_r;       
       m_wheel_commands[1] = m_wheel_commands[3] = v_l;       
     }
@@ -184,6 +186,19 @@ namespace ares_control
       m_wheel_commands[1] = msg->data[1].current;
       m_wheel_commands[2] = msg->data[2].current;
       m_wheel_commands[3] = msg->data[3].current;
+    }
+
+    bool isOverheating()
+    {
+      for (size_t i = 0; i < 4; i++)
+      {
+        if (m_motor_array[i].getTemperature() > 50)
+        {
+          NODELET_WARN("Motor %d at %s is overheating!", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str());
+          return true;
+        }
+      }
+      return false;
     }
 
   }; // class LocoControllerNodelet
