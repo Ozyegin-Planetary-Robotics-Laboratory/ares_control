@@ -36,6 +36,7 @@ namespace ares_control
 
       ros::param::get("locomotion/wheel_ids", wheel_ids);
       ros::param::get("locomotion/control_method", control_method);
+      ros::param::get("locomotion/control_degree", m_control_degree);
       ros::param::get("general/loop_rate", m_control_freq);
       ros::param::get("general/can_interface", can_interface);
 
@@ -80,6 +81,7 @@ namespace ares_control
     TMotor::AKManager m_motor_array[4];
     float m_wheel_commands[4];
     double m_control_freq;
+    int m_control_degree;
     std::mutex m_control_mutex;
     std::thread m_control_thread;
 
@@ -150,11 +152,12 @@ namespace ares_control
     void robotTwistVelocityCallback(const geometry_msgs::TwistConstPtr &msg)
     {
       float linear(msg->linear.x), angular(msg->angular.z);
-      float v_l = (linear - angular * ROBOT_WIDTH) * WHEEL_RADIUS;
-      float v_r = (linear + angular * ROBOT_WIDTH) * WHEEL_RADIUS;
       std::lock_guard <std::mutex> guard(m_control_mutex);
-      m_wheel_commands[0] = m_wheel_commands[2] = -v_r*RAD_TO_DEG; // right wheel axes are mirrored       
-      m_wheel_commands[1] = m_wheel_commands[3] = v_l*RAD_TO_DEG;       
+      float v_l = ((linear - angular * ROBOT_WIDTH) * WHEEL_RADIUS * RAD_TO_DEG - m_wheel_commands[0]*m_control_degree)/(m_control_degree + 1);
+      float v_r = ((linear + angular * ROBOT_WIDTH) * WHEEL_RADIUS * RAD_TO_DEG + m_wheel_commands[1]*m_control_degree)/(m_control_degree + 1);
+      NODELET_INFO("Left wheel velocity: %f, Right wheel velocity: %f", v_l, v_r);
+      m_wheel_commands[0] = m_wheel_commands[2] = -v_r;       
+      m_wheel_commands[1] = m_wheel_commands[3] = v_l;       
     }
 
     void wheelArrayVelocityCallback(const ares_control::WheelCommandArrayConstPtr &msg)
