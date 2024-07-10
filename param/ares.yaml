@@ -1,7 +1,7 @@
 locomotion:
   speed:
-    angular_scale:  1.0             # Scale factor for angular velocity
-    linear_scale:   1.0             # Scale factor for linear velocity
+    angular_scale:  20.0             # Scale factor for angular velocity
+    linear_scale:   10.0             # Scale factor for linear velocity
   control_method:   "velocity"      # Velociy or torque control
   wheel_ids:        [3, 4, 2, 1]    # fr, fl, rr, rl
 
@@ -11,4 +11,4 @@ occupancy_map:
 
 general:
   loop_rate:        20              # Control loop frequency
-  can_interface:    "vcan0"         # Name of the CAN network interface
+  can_interface:    "can0"         # Name of the CAN network interface
