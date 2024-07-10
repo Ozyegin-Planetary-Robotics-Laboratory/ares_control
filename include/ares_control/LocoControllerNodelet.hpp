@@ -21,7 +21,8 @@ namespace ares_control
     public:
     LocoControllerNodelet() :
       m_wheel_commands{0.0, 0.0, 0.0, 0.0},
-      m_motor_name_map{"front right", "front left", "rear right", "rear left"}
+      m_motor_name_map{"front right", "front left", "rear right", "rear left"},
+      m_overheating(false)
     {}
 
     virtual void onInit()
@@ -35,11 +36,15 @@ namespace ares_control
 
       NODELET_INFO("Initializing parameters from server.");
 
-      ros::param::get("locomotion/wheel_ids", wheel_ids);
+      int temp_limit(50);
+      ros::param::get("locomotion/motor_temp_lim", temp_limit);
       ros::param::get("locomotion/control_method", control_method);
       ros::param::get("locomotion/control_degree", m_control_degree);
       ros::param::get("general/loop_rate", m_control_freq);
       ros::param::get("general/can_interface", can_interface);
+      ros::param::get("locomotion/wheel_ids", wheel_ids);
+      temp_limit = std::max(INT8_MIN, std::min(INT8_MAX, temp_limit));
+      m_maximum_temperature = temp_limit;
 
       NODELET_INFO("Locomotion: Control method: %s", control_method.c_str());
       NODELET_INFO("Locomotion: CAN interface: %s", can_interface.c_str());
@@ -85,7 +90,9 @@ namespace ares_control
     int m_control_degree;
     std::mutex m_control_mutex;
     std::thread m_control_thread;
+    bool m_overheating;
     std::vector<std::string> m_motor_name_map;
+    int8_t m_maximum_temperature;
 
     void velocityControlLoop()
     {
@@ -192,9 +199,11 @@ namespace ares_control
     {
       for (size_t i = 0; i < 4; i++)
       {
-        if (m_motor_array[i].getTemperature() > 50)
+        int8_t temperature = m_motor_array[i].getTemperature();
+        if (temperature > m_maximum_temperature || m_motor_array[i].getFault() == TMotor::MotorFault::OVERTEMPERATURE)
         {
-          NODELET_WARN("Motor %d at %s is overheating!", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str());
+          NODELET_WARN("Motor %d at %s is overheating at %i", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str(), temperature);
+          m_overheating = true;
           return true;
         }
       }
