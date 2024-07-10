@@ -3,7 +3,7 @@ locomotion:
     angular_scale:  1.0             # Scale factor for angular velocity
     linear_scale:   1.0             # Scale factor for linear velocity
   control_method:   "velocity"      # Velociy or torque control
-  wheel_ids:        [1, 2, 3, 4]    # fr, fl, rr, rl
+  wheel_ids:        [3, 4, 2, 1]    # fr, fl, rr, rl
 
 occupancy_map:
   resolution:       5               # Resolution of the map r, means 2**r cells per meter
