@@ -4,7 +4,5 @@
     <rosparam command="load" file="$(find ares_control)/param/ares.yaml" />
     <node pkg="nodelet" type="nodelet" name="manager_"  args="manager" output="screen" />
     <node pkg="nodelet" type="nodelet" name="locomotion_controller" args="load ares_control/LocoControllerNodelet manager_" output="screen" />
-    <node pkg="nodelet" type="nodelet" name="joystick_hw_interface" args="load ares_control/JoystickInterfaceNodelet manager_" output="screen" />
-    <node pkg="nodelet" type="nodelet" name="zed_wrapper" args="load zed_wrapper/ZedWrapperNodelet manager_" output="screen" />
   </group>
 </launch>

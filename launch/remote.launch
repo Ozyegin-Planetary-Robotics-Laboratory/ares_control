@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
 <launch>
-    <include file="$(find ares_control)/launch/joy.launch"/>
-    <machine name="orin"
-             address="192.168.1.3"
-             env-loader="/opt/ros/noetic/env2.sh"
-             default="true"
-             user="kaine"
-             ssh-port="22"  
-             ros-root="/opt/ros/noetic"
-             ros-package-path="/home/kaine/catkin_ws/src"
-    />
-    <include file="$(find ares_control)/launch/main.launch"/>
+    <group>
+        <machine name="ares" address="ares" env-loader="/home/kaine/catkin_ws/devel/env.sh" user="kaine" default="true" ssh-port="22" />
+        <include machine="ares" file="$(find ares_control)/launch/locomotion.launch"/>
+    </group>
+    <group>
+        <machine name="local" address="localhost" default="true"/>
+        <include machine="local" file="$(find ares_control)/launch/joy.launch"/>
+    </group>
 </launch>
