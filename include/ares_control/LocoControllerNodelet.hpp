@@ -110,15 +110,30 @@ namespace ares_control
         bool overheating = isOverheating();
         for (size_t i = 0; i < 4; i++)
         {
-          feedbacks[i]->position    = m_motor_array[i].getPosition();
-          feedbacks[i]->velocity    = m_motor_array[i].getVelocity();
-          feedbacks[i]->current     = m_motor_array[i].getCurrent();
-          feedbacks[i]->temperature = m_motor_array[i].getTemperature();
-          feedbacks[i]->motor_fault = m_motor_array[i].getFault();
+          try {
+            feedbacks[i]->position    = m_motor_array[i].getPosition();
+            feedbacks[i]->velocity    = m_motor_array[i].getVelocity();
+            feedbacks[i]->current     = m_motor_array[i].getCurrent();
+            feedbacks[i]->temperature = m_motor_array[i].getTemperature();
+            feedbacks[i]->motor_fault = m_motor_array[i].getFault();
+          }
+          catch (const std::exception &e)
+          {
+            NODELET_ERROR("Motor %d at %s: %s", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str(), e.what());
+          }
           std::lock_guard <std::mutex> guard(m_control_mutex);
           cmds[i] = m_wheel_commands[i];
           m_wheel_commands[i] *= 0.95;
-          if (!overheating) m_motor_array[i].sendVelocity(cmds[i]);
+          if (!overheating)
+          {
+            try {
+              m_motor_array[i].sendVelocity(cmds[i]);
+            }
+            catch (const std::exception &e)
+            {
+              NODELET_ERROR("Motor %d at %s: %s", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str(), e.what());
+            }
+          }
         }
         m_wheels_pub[0].publish(feedbacks[0]); 
         m_wheels_pub[1].publish(feedbacks[1]); 
@@ -150,7 +165,13 @@ namespace ares_control
           std::lock_guard <std::mutex> guard(m_control_mutex);
           cmds[i] = m_wheel_commands[i];
           m_wheel_commands[i] *= 0.95;
-          m_motor_array[i].sendCurrent(cmds[i]);
+          try {
+            m_motor_array[i].sendCurrent(cmds[i]);
+          }
+          catch (const std::exception &e)
+          {
+            NODELET_ERROR("Motor %d at %s: %s", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str(), e.what());
+          }
         }
         m_wheels_pub[0].publish(feedbacks[0]); 
         m_wheels_pub[1].publish(feedbacks[1]); 
