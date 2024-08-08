@@ -60,6 +60,8 @@ find_package(PCL REQUIRED)
 add_message_files(
   FILES
   GoalSite.msg
+  MotorCommand.msg
+  MotorFeedback.msg
   WheelCommandArray.msg
 )
 
@@ -153,11 +155,7 @@ add_library(ares_control src/main.cpp)
 #   ${catkin_LIBRARIES}
 # )
 
-target_link_libraries(ares_control
-  ${catkin_LIBRARIES}
-  ${PCL_LIBRARIES}
-  tmotor
-)
+target_link_libraries(ares_control ${catkin_LIBRARIES} ${PCL_LIBRARIES} tmotor)
 
 #############
 ## Install ##
