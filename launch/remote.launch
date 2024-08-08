@@ -2,10 +2,16 @@
 <launch>
     <group>
         <machine name="ares" address="ares" env-loader="/home/kaine/catkin_ws/devel/env.sh" user="kaine" default="true" ssh-port="22" />
-        <include machine="ares" file="$(find ares_control)/launch/locomotion.launch"/>
+        <include file="$(find ares_control)/launch/locomotion.launch"/>
+        <include file="$(find deimos_control)/launch/manipulator.launch"/>
     </group>
     <group>
         <machine name="local" address="localhost" default="true"/>
-        <include machine="local" file="$(find ares_control)/launch/joy.launch"/>
+        <node ns="ares" machine="local" pkg="joy" type="joy_node" name="joystick_locomotion" output="screen">
+            <param name="dev" type="string" value="/dev/input/js0"/>           
+        </node>
+        <node ns="deimos" machine="local" pkg="joy" type="joy_node" name="joystick_manipulate" output="screen">
+            <param name="dev" type="string" value="/dev/input/js1"/>           
+        </node>
     </group>
 </launch>

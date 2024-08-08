@@ -10,7 +10,6 @@ project(ares_control)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  tmotor
   genmsg
   tf2_ros
   pcl_ros
@@ -77,7 +76,7 @@ add_action_files(DIRECTORY action FILES FollowPath.action)
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  actionlib_msgs tmotor nav_msgs std_msgs
+  actionlib_msgs nav_msgs std_msgs
 )
 
 ################################################
