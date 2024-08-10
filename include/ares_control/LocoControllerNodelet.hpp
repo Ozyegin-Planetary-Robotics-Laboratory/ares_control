@@ -58,10 +58,10 @@ namespace ares_control
         m_motor_array[i].connect(can_interface.c_str());
       }
       
-      m_wheels_pub[0] = nh.advertise <tmotor::MotorFeedback> ("front_right/feedback", 1, false); 
-      m_wheels_pub[1] = nh.advertise <tmotor::MotorFeedback> ("front_left/feedback", 1, false); 
-      m_wheels_pub[2] = nh.advertise <tmotor::MotorFeedback> ("rear_right/feedback", 1, false); 
-      m_wheels_pub[3] = nh.advertise <tmotor::MotorFeedback> ("rear_left/feedback", 1, false); 
+      m_wheels_pub[0] = nh.advertise <ares_control::MotorFeedback> ("front_right/feedback", 1, false); 
+      m_wheels_pub[1] = nh.advertise <ares_control::MotorFeedback> ("front_left/feedback", 1, false); 
+      m_wheels_pub[2] = nh.advertise <ares_control::MotorFeedback> ("rear_right/feedback", 1, false); 
+      m_wheels_pub[3] = nh.advertise <ares_control::MotorFeedback> ("rear_left/feedback", 1, false); 
             
       /* Subscribe to command topics and initialize the control loop. */
       if (control_method == "velocity")
@@ -101,11 +101,11 @@ namespace ares_control
       {
         loop_frequency.sleep();
         float cmds[4];
-        tmotor::MotorFeedbackPtr feedbacks[4] = {
-          tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback),
-          tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback),
-          tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback),
-          tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback)
+        ares_control::MotorFeedbackPtr feedbacks[4] = {
+          ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback),
+          ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback),
+          ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback),
+          ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback)
         };
         bool overheating = isOverheating();
         for (size_t i = 0; i < 4; i++)
@@ -149,11 +149,11 @@ namespace ares_control
       {
         loop_frequency.sleep();
         float cmds[4];
-        tmotor::MotorFeedbackPtr feedbacks[4] = {
-          tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback),
-          tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback),
-          tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback),
-          tmotor::MotorFeedbackPtr(new tmotor::MotorFeedback)
+        ares_control::MotorFeedbackPtr feedbacks[4] = {
+          ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback),
+          ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback),
+          ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback),
+          ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback)
         };
         for (size_t i = 0; i < 4; i++)
         {
