@@ -7,7 +7,7 @@
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
 #include <ares_control/WheelCommandArray.h>
-#include <tmotor/MotorFeedback.h>
+#include <ares_control/MotorFeedback.h>
 #include <geometry_msgs/Twist.h>
 
 #define WHEEL_RADIUS 0.1425f // cm
