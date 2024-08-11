@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <mutex>
+#include <atomic>
 #include <tmotor.hpp>
 #include <ros/ros.h>
 #include <nodelet/nodelet.h>
@@ -43,8 +44,7 @@ namespace ares_control
       ros::param::get("general/loop_rate", m_control_freq);
       ros::param::get("general/can_interface", can_interface);
       ros::param::get("locomotion/wheel_ids", wheel_ids);
-      temp_limit = std::max(INT8_MIN, std::min(INT8_MAX, temp_limit));
-      m_maximum_temperature = temp_limit;
+      m_maximum_temperature = std::max(INT8_MIN, std::min(INT8_MAX, temp_limit));
 
       NODELET_INFO("Locomotion: Control method: %s", control_method.c_str());
       NODELET_INFO("Locomotion: CAN interface: %s", can_interface.c_str());
@@ -55,7 +55,16 @@ namespace ares_control
       for (size_t i = 0; i < 4; i++)
       {
         m_motor_array[i].setMotorID(wheel_ids[i]);
-        m_motor_array[i].connect(can_interface.c_str());
+        try
+        {
+          m_motor_array[i].connect(can_interface.c_str());
+        }
+        catch(const std::exception& e)
+        {
+          NODELET_WARN("Motor %d at %s: %s", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str(), e.what());
+          i--; // retry
+          std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
       }
       
       m_wheels_pub[0] = nh.advertise <ares_control::MotorFeedback> ("front_right/feedback", 1, false); 
@@ -90,7 +99,8 @@ namespace ares_control
     int m_control_degree;
     std::mutex m_control_mutex;
     std::thread m_control_thread;
-    bool m_overheating;
+    std::atomic<bool> m_reconnect;
+    std::atomic<bool> m_overheating;
     std::vector<std::string> m_motor_name_map;
     int8_t m_maximum_temperature;
 
@@ -100,6 +110,24 @@ namespace ares_control
       while (!ros::isShuttingDown())
       {
         loop_frequency.sleep();
+        if (m_reconnect)
+        {
+          ROS_INFO("Reconnecting to motors through the CAN interface.");
+          for (size_t i = 0; i < 4; i++)
+          {
+            try
+            {
+              m_motor_array[i].connect();
+            }
+            catch(const std::exception& e)
+            {
+              NODELET_WARN("Motor %d at %s: %s", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str(), e.what());
+              i--; // retry
+              std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
+          }
+          m_reconnect = false;
+        }
         float cmds[4];
         ares_control::MotorFeedbackPtr feedbacks[4] = {
           ares_control::MotorFeedbackPtr(new ares_control::MotorFeedback),
@@ -132,6 +160,7 @@ namespace ares_control
             catch (const std::exception &e)
             {
               NODELET_ERROR("Motor %d at %s: %s", m_motor_array[i].getMotorID(), m_motor_name_map[i].c_str(), e.what());
+              if (e.what() == "Error while writing to the socket") m_reconnect = true;
             }
           }
         }
