@@ -78,7 +78,7 @@ add_action_files(DIRECTORY action FILES FollowPath.action)
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  actionlib_msgs ares_control nav_msgs std_msgs
+  actionlib_msgs nav_msgs std_msgs
 )
 
 ################################################
@@ -133,7 +133,7 @@ add_library(ares_control src/main.cpp)
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
-# add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
