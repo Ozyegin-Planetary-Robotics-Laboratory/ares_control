@@ -78,7 +78,7 @@ add_action_files(DIRECTORY action FILES FollowPath.action)
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
-  actionlib_msgs nav_msgs std_msgs
+  actionlib_msgs ares_control nav_msgs std_msgs
 )
 
 ################################################
