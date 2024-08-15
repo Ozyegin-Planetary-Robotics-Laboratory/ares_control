@@ -13,4 +13,4 @@ occupancy_map:
 
 general:
   loop_rate:        20              # Control loop frequency
-  can_interface:    "vcan0"         # Name of the CAN network interface
+  can_interface:    "can0"         # Name of the CAN network interface

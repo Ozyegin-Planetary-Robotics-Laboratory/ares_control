@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <group ns="ares">
-    <rosparam command="load" file="$(find ares_control)/param/ares.yaml" />
-    <node pkg="nodelet" type="nodelet" name="manager_"  args="manager" output="screen" />
-    <node pkg="nodelet" type="nodelet" name="locomotion_controller" args="load ares_control/LocoControllerNodelet manager_" output="screen" />
-  </group>
-</launch>
