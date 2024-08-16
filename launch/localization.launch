@@ -1,7 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <group ns="ares">
-    <include file="$(find zed_wrapper)/launch/zed2i.launch"/>
-    <!-- TO ADD GPS INTEGRATION WITH ROBOT_LOCALIZATION AS WELL AS SEVERAL REMAPPINGS -->
-  </group>
-</launch>
