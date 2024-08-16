@@ -44,6 +44,10 @@ generate_dynamic_reconfigure_options(
 )
 
 catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES ares_control
+#  CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs
+#  DEPENDS system_lib
 )
 
 include_directories(
