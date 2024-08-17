@@ -2,8 +2,6 @@
 <launch>
   <group ns="ares">
     <rosparam command="load" file="$(find ares_control)/param/ares.yaml" />
-    <node pkg="nodelet" type="nodelet" name="manager_"  args="manager" output="screen" />
-    <node pkg="nodelet" type="nodelet" name="locomotion_controller" args="load ares_control/LocoControllerNodelet manager_" output="log" />
     <node pkg="deimos_control" type="joy_teleop" name="deimos_controller" output="log" />
   </group>
 </launch>
