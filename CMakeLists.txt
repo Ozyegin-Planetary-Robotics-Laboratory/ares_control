@@ -57,8 +57,11 @@ include_directories(
 
 add_library(ares_control src/main.cpp)
 
+add_executable(joystick_interface src/joystick_interface.cpp)
+
 add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
+target_link_libraries(joystick_interface ${catkin_LIBRARIES})
 target_link_libraries(ares_control ${catkin_LIBRARIES} ${PCL_LIBRARIES} tmotor)
 
 install(FILES
