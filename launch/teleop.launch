@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<launch>
-    <group ns="deimos">
-        <node pkg="joy" type="joy_node" name="joystick" output="screen">
-            <param name="dev" type="string" value="/dev/input/js1"/>
-        </node>
-    </group>
-</launch>

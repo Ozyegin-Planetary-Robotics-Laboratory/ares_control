@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <group ns="ares">
+    <rosparam command="load" file="$(find ares_control)/param/controller.yaml" />
+    <node pkg="nodelet" type="nodelet" name="nodelet_manager"  args="manager" output="screen" />
+    <node pkg="nodelet" type="nodelet" name="locomotion_controller" args="load ares_control/LocoControllerNodelet nodelet_manager" output="screen" />
+  </group>
+  <include file="$(find deimos_control)/launch/deimos.launch" />
+</launch>

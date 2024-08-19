@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<launch>
-  <group ns="ares">
-    <rosparam command="load" file="$(find ares_control)/param/ares.yaml" />
-    <node pkg="deimos_control" type="joy_teleop" name="deimos_controller" output="log" />
-  </group>
-</launch>
