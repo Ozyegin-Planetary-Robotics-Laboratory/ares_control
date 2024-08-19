@@ -46,12 +46,16 @@ namespace ares_control
       ros::param::get("locomotion/wheel_ids", wheel_ids);
       m_maximum_temperature = std::max(INT8_MIN, std::min(INT8_MAX, temp_limit));
       m_can_interface = can_interface;
+      m_motor_ids[0] = wheel_ids[0];
+      m_motor_ids[1] = wheel_ids[1];
+      m_motor_ids[2] = wheel_ids[2];
+      m_motor_ids[3] = wheel_ids[3];
 
       NODELET_INFO("Locomotion: Control method: %s", control_method.c_str());
       NODELET_INFO("Locomotion: CAN interface: %s", can_interface.c_str());
       NODELET_INFO("Locomotion: Wheel IDs: %d, %d, %d, %d", wheel_ids[0], wheel_ids[1], wheel_ids[2], wheel_ids[3]);
       NODELET_INFO("Locomotion: Control loop rate: %f", m_control_freq);
-      
+
       /* Connect to motors and advertise feedbacks. */
       connectMotors();
       m_wheels_pub[0] = nh.advertise <ares_control::MotorFeedback> ("front_right/feedback", 1, false); 
@@ -81,6 +85,7 @@ namespace ares_control
     ros::Subscriber m_twist_sub, m_wheels_cmd_sub; 
     ros::Publisher  m_wheels_pub[4];
     TMotor::AKManager m_motor_array[4];
+    uint8_t m_motor_ids[4];
     std::string m_can_interface;
     float m_wheel_commands[4];
     double m_control_freq;
@@ -246,6 +251,7 @@ namespace ares_control
       {
         try
         {
+          m_motor_array[i].setMotorID(m_motor_ids[i]);
           m_motor_array[i].connect(m_can_interface.c_str());
         }
         catch(TMotor::CANSocketException& e)
