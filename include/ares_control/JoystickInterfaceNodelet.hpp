@@ -1,35 +1,36 @@
-#ifndef JOYSTICK_INTERFACE_HPP
-#define JOYSTICK_INTERFACE_HPP
+#ifndef JOYSTICK_INTERFACE_NODELET_HPP
+#define JOYSTICK_INTERFACE_NODELET_HPP
 
 #include <mutex>
 #include <thread>
 #include <ros/ros.h>
+#include <nodelet/nodelet.h>
 #include <sensor_msgs/Joy.h>
 #include <geometry_msgs/Twist.h>
 
 namespace ares_control
 {
-  class JoystickInterface
+  class JoystickInterfaceNodelet : public nodelet::Nodelet
   {
     public:
-    JoystickInterface() :
+    JoystickInterfaceNodelet() :
       m_linear_scale(0.0),
       m_angular_scale(0.0)    
     {}
 
-    void init()
+    virtual void onInit()
     {
+      ros::NodeHandle &nh = getMTNodeHandle();
       ros::param::get("locomotion/speed/linear_scale", m_linear_scale);
       ros::param::get("locomotion/speed/angular_scale", m_angular_scale);
       ros::param::get("general/loop_rate", m_loop_rate);
-      m_sub = m_nh.subscribe<sensor_msgs::Joy>("joy", 1, &JoystickInterface::joyCallback, this);
-      m_pub = m_nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);    
-      m_control_thread = std::thread(&JoystickInterface::controlLoop, this); 
+      m_sub = nh.subscribe<sensor_msgs::Joy>("joy", 1, &JoystickInterfaceNodelet::joyCallback, this);
+      m_pub = nh.advertise<geometry_msgs::Twist>("cmd_vel", 1);    
+      m_control_thread = std::thread(&JoystickInterfaceNodelet::controlLoop, this); 
       m_control_thread.detach();
     }
 
     private:
-    ros::NodeHandle m_nh;
     ros::Subscriber m_sub;
     ros::Publisher m_pub;
     std::thread m_control_thread;
@@ -60,7 +61,7 @@ namespace ares_control
       }
     }
 
-  }; // JoystickInterface
+  }; // JoystickInterfaceNodelet
 }; // namespace ares_control
 
-#endif // JOYSTICK_INTERFACE_HPP
+#endif // JOYSTICK_INTERFACE_NODELET_HPP

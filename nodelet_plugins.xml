@@ -14,6 +14,12 @@
       A nodelet for operating the locomotion hardware of the robot.
     </description>
   </class>
+  <class name="ares_control/JoystickInterfaceNodelet" type="ares_control::JoystickInterfaceNodelet" base_class_type="nodelet::Nodelet">
+    <description>
+      A nodelet for interfacing a twist input with a joystick one.
+    </description>
+  </class>
+
   <class name="ares_control/PathControllerNodelet" type="ares_control::PathControllerNodelet" base_class_type="nodelet::Nodelet">
     <description>
       A nodelet for controlling the robot's path in line with action requests.
