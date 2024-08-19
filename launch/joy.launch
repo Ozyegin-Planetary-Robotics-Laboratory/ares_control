@@ -4,5 +4,6 @@
     <node pkg="joy" type="joy_node" name="joystick" output="log">
       <param name="dev" type="string" value="/dev/input/aresjs"/>
     </node>
+    <node pkg="ares_control" type="joystick_interface" name="joystick_interface" output="log"/>
   </group>
 </launch>
