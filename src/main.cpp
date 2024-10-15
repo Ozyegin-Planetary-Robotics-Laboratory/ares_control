@@ -1,6 +1,6 @@
 //#include <ares_control/PathfindingServiceNodelet.hpp>
 //#include <ares_control/MissionControllerNodelet.hpp>
-#include <ares_control/JoystickInterfaceNodelet.hpp>
+#include <ares_control/JoystickInterface.hpp>
 #include <ares_control/LocoControllerNodelet.hpp>
 //#include <ares_control/PathControllerNodelet.hpp>
 #include <pluginlib/class_list_macros.h>
